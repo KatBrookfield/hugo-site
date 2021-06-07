@@ -7,8 +7,8 @@ RUN wget --quiet https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERS
     rm -rf hugo_${HUGO_VERSION}_Linux-64bit.tar.gz
 
 RUN apk add git
-RUN git clone https://github.com/KatBrookfield/hugo-site.git .
-RUN hugo -v --source=/hugo-site --destination=/hugo-site/public
+RUN git clone https://github.com/KatBrookfield/hugo-site.git /source
+RUN hugo -v --source=/source --destination=/hugo-site/public
 FROM bitnami/nginx:latest
 COPY --from=HUGO /hugo-site/public/ /opt/bitnami/nginx/html/
 EXPOSE 8080
