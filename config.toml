@@ -1,0 +1,11 @@
+baseURL = "http://advecti.io"
+languageCode = "en-us"
+title = "Hi, I'm Hugo running on Kubernetes in a single pod!"
+theme = "jeffprod"
+
+[permalinks]
+    post = "/:year/:filename"
+
+[taxonomies]
+    tag = "tags"
+    archive = "archives"
