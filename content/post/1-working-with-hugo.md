@@ -19,7 +19,7 @@ hugo version
 
 You should see output similar to this:
 ```
-katarinabrookfield@KatsMac ~ % hugo version
+hugo version
 hugo v0.83.1+extended darwin/arm64 BuildDate=unknown
 ```
 
@@ -75,3 +75,5 @@ In my case, I have changed the following files so far:
 
 1. In */themes/jeffprod/archetypes/post.md* changed Author
 2. In */themes/jeffprod/layouts/partials/footer.html* changed Twitter link to include @MrsBrookfield and removed other socials
+
+Now that we have the local site created we can proceed with putting it in a container.

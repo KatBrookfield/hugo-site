@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hugo-site-pod
+  labels:
+    project: hugo-site
+spec:
+  containers:
+    - name: web-ctr
+      image: katbrookfield/hugo-site
+      ports:
+        - containerPort: 8080
