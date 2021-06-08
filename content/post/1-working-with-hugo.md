@@ -57,7 +57,7 @@ Run following command to create a new post:
 hugo new post/my-first-post.md
 ```
 
-You can either edit the post in your terminal or use an editor, I am using Visual Studio Code at the moment as it let's you do a preview of your md file.
+You can either edit the post in your terminal or use an editor, I am using Visual Studio Code at the moment as it lets you do a preview of your md file.
 Once you're done editing your post, do not forget to change the value of *draft* to *false*, otherwise your post won't be published.
 
 ## Render your website
