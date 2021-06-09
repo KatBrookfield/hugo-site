@@ -3,7 +3,7 @@ title: "5 Creating a Loadbalancer"
 date: 2021-06-07T22:34:33+01:00
 archives: "2021"
 tags: []
-author: Kat Brookfield
+author: "Kat Brookfield"
 ---
 
 Our pod is now running but we need to be able to connect to it. To do that, we will deploy a **Service**.
@@ -11,7 +11,6 @@ Our pod is now running but we need to be able to connect to it. To do that, we w
 One of the reasons why we are running this on a cloud-based cluster is the ability to deploy load-balancers. I know what you are thinking; *"Why are we deploying a load-balancer for a single pod?"*. At this stage, we're doing it to prepare for next steps which will include scaling-out of our application.
 
 ## Create a Service
-
 Create a file called cloud-lb.yml:
 ```
 katarinabrookfield@KatsMac hugo-site % vi cloud-lb.yml

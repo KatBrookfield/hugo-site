@@ -3,7 +3,7 @@ title: "3 Creating a Linode Kubernetes Cluster"
 date: 2021-06-07T22:33:48+01:00
 archives: "2021"
 tags: []
-author: Kat Brookfield
+author: "Kat Brookfield"
 ---
 
 In previous post, we have containerized Hugo and pushed the image to our Docker Hub registry. Now we need a Kubernetes cluster to run this container on.

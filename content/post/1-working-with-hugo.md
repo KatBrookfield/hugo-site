@@ -3,7 +3,7 @@ title: "1 Working With Hugo"
 date: 2021-06-07T22:33:20+01:00
 archives: "2021"
 tags: []
-author: Kat Brookfield
+author: "Kat Brookfield"
 ---
 
 I am using Hugo to generate static sites for this blog. As I am on a Mac using Brew, I will be using it to install Hugo. If you are using a different OS you can follow installation instructions on https://gohugo.io/getting-started/installing/
