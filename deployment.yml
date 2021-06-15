@@ -12,6 +12,13 @@ spec:
       labels:
         project: hugo-site
     spec: 
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: node
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector: 
+          matchLabels:
+            project: hugo-site
       containers:
       - name: hugo-pod
         imagePullPolicy: Always

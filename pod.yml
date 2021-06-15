@@ -6,7 +6,7 @@ metadata:
     project: hugo-site
 spec:
   containers:
-    - name: web-ctr
-      image: katbrookfield/hugo-site
-      ports:
-        - containerPort: 8080
+  - name: hugo-ctr
+    image: katbrookfield/hugo-site
+    ports:
+      - containerPort: 8080
