@@ -6,10 +6,10 @@ tags: []
 author: "Kat Brookfield"
 ---
 
-In the previous post, we have scaled our deployment by defining number of replicas required but we weren't able to control where they get deployed. Today, we'll look into this further.
+In previous post, we have scaled our deployment by defining number of replicas required but we weren't able to control where they get deployed. Today, we'll look into this further.
 
 ## Understanding default restart behaviour
-It is important to note that if a node fails, pods running on that node are scheduled for deletion. Pods only get scheduled on a node once, when they are created, and remaing running on that node until it stops or is terminated. That means that a pod is never rescheduled on another node, but a new pod is created instead.
+It is important to note that if a node fails, pods running on that node are scheduled for deletion. Pods only get scheduled on a node once, when they are created, and remain running on that node until it stops or is terminated. That means that a pod is never rescheduled on another node, but a new pod is created instead.
 
 In order to demonstrate this behaviour I have changed the number of replicas in my deployment to 2 and applied the changes:
 ```
@@ -46,7 +46,7 @@ Conditions:
 ```
 Our website was no longer accessible; however, when looking at the pods, they still appeared to be running:
 ```
-  katarinabrookfield@KatsMac hugo-site % kubectl get pod -o wide | grep hugo
+katarinabrookfield@KatsMac hugo-site % kubectl get pod -o wide | grep hugo
 hugo-site-deployment-74c977df86-wmc2x   1/1     Running            0          7m13s   10.2.1.86   lke27049-39949-60a53133d7b2   <none>           <none>
 hugo-site-deployment-74c977df86-xp98x   1/1     Running            0          55m     10.2.1.85   lke27049-39949-60a53133d7b2   <none>           <none>
 ```
@@ -143,7 +143,7 @@ However, they are again running on the same node.
 In order to introduce some level of high-availability we are going to define rules to dictate how should our pods be spread across the cluster nodes.
 
 ### Configuring Node labels
-One of the prerequisites is defining Node labels that will define our *topology domains*. These could be based on regions, zones, nodes, or other user-defined settings. In our scenario, I will define a topology based on Nodes.
+One of the prerequisites is defining Node labels that will define our *topology domains* (a fault-domain basically). These could be based on regions, zones, nodes, or other user-defined settings. In our scenario, I will define a topology based on Nodes.
 ```
 katarinabrookfield@KatsMac hugo-site % kubectl label node lke27049-39949-60a531334464 node=node1
 node/lke27049-39949-60a531334464 labeled
@@ -165,8 +165,8 @@ Labels:             beta.kubernetes.io/arch=amd64
                     lke.linode.com/pool-id=39949
                     node=node1
 ```
-### Adding Topology Spread Constraints to Deployment
-Before we procees with adding the rules, we will quickly verify that the pods are running on one node only:
+### Adding Topology Spread Constraints to a Deployment
+Before we proceed with adding the rules, we will quickly verify that the pods are running on one node only:
 ```
 katarinabrookfield@KatsMac hugo-site % kubectl get pod -o wide | grep hugo
 hugo-site-deployment-6fb88df68-h78sp   1/1     Running            0          82s    10.2.4.8   lke27049-39949-60a531334464   <none>           <none>
@@ -203,11 +203,16 @@ spec:
         image: katbrookfield/hugo-site
 ```
 Note: As the *topologySpreadConstraints* is a *Pod* definition, we need to add it to Pod specs.
+
 We have added following values:
-  **maxSkew** - describes the degree to which Pods may be unevenly distributed, in our case by 1
-  **topologyKey** - is the label we have added
-  **whenUnsatisfiable** - we have defined a soft rule that will try to satisfy the condition by minimizing the skew, the default option is *DoNotSchedule* which stops the pods from being scheduled
-  **labelSelector** - matches our pod labels
+
+  - **maxSkew** - describes the degree to which Pods may be unevenly distributed, in our case by 1
+
+  - **topologyKey** - is the label we have added
+
+  - **whenUnsatisfiable** - we have defined a soft rule that will try to satisfy the condition by minimizing the skew, the default option is *DoNotSchedule* which stops the pods from being scheduled
+
+  - **labelSelector** - matches our pod labels
 
 We will now deploy the changes, including an increase of replicas to 5:
 ```
