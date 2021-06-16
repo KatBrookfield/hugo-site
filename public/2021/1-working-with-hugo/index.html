@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Hi, I&#39;m Hugo running on multiple Kubernetes nodes!  | 1 Working With Hugo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css" />
+    <link rel="stylesheet" href="http://advecti.io/css/blog.css" />
+    </head>
+<body>
+
+    
+    <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="http://advecti.io">Home</a>
+        </div>
+    </nav>
+    
+
+    
+    <section class="hero is-info is-medium">
+        <div class="hero-body" style="background-image: url(http://advecti.io/img/bg-blog.jpg);">
+            <div class="container has-text-centered">
+                <br>
+                <h1 class="title is-size-1">
+                    
+                        1 Working With Hugo
+                    
+                </h1>
+                
+            </div>
+        </div>
+    </section>
+
+
+<div class="container">
+    <div class="section">
+    
+
+<div class="columns">
+    <div class="column is-9">
+        <div class="tile is-child box">
+            <div class="content">
+                <p>I am using Hugo to generate static sites for this blog. As I am on a Mac using Brew, I will be using it to install Hugo. If you are using a different OS you can follow installation instructions on <a href="https://gohugo.io/getting-started/installing/">https://gohugo.io/getting-started/installing/</a></p>
+<h2 id="installation">Installation</h2>
+<p>Run following commands in your favourite terminal:</p>
+<pre><code>brew install hugo
+
+hugo version
+</code></pre><p>You should see output similar to this:</p>
+<pre><code>hugo version
+hugo v0.83.1+extended darwin/arm64 BuildDate=unknown
+</code></pre><h2 id="selecting-a-theme">Selecting a Theme</h2>
+<p>There are a lot of Themes to choose from. This blog will be using a theme called <a href="https://themes.gohugo.io/hugo-blog-jeffprod/">Jeffprod</a></p>
+<h2 id="creating-a-hugo-site-and-applying-theme">Creating a Hugo site and applying theme</h2>
+<p>Execute following commands to create a new site and apply the selected theme:</p>
+<pre><code>hugo new site hugo-site
+
+cd hugo-site
+
+git clone https://github.com/Tazeg/hugo-blog-jeffprod.git themes/jeffprod
+</code></pre><h2 id="modify-configtoml">Modify config.toml</h2>
+<p>In your working directory (hugo-site), modify <em>config.toml</em> file and change baseURL, title and add theme:</p>
+<pre><code>baseURL = &quot;http://advecti.io&quot;
+languageCode = &quot;en-us&quot;
+title = &quot;Hi, I'm Hugo running on Kubernetes in a single pod!&quot;
+theme = &quot;jeffprod&quot;
+
+[permalinks]
+    post = &quot;/:year/:filename&quot;
+
+[taxonomies]
+    tag = &quot;tags&quot;
+    archive = &quot;archives&quot;
+</code></pre><h2 id="create-your-post">Create your post</h2>
+<p>Run following command to create a new post:</p>
+<pre><code>hugo new post/my-first-post.md
+</code></pre><p>You can either edit the post in your terminal or use an editor, I am using Visual Studio Code at the moment as it lets you do a preview of your md file.
+Once you&rsquo;re done editing your post, do not forget to change the value of <em>draft</em> to <em>false</em>, otherwise your post won&rsquo;t be published.</p>
+<h2 id="render-your-website">Render your website</h2>
+<p>To see how your website will look run the following command:</p>
+<pre><code>hugo server
+</code></pre><h2 id="browse-to-your-preview">Browse to your preview</h2>
+<p>In your browser, go to http://localhost:1313/ to see your website.</p>
+<h2 id="further-changes-to-the-config-files">Further changes to the config files</h2>
+<p>Depending on your Theme, you may want to adapt various configurations.
+In my case, I have changed the following files so far:</p>
+<ol>
+<li>In <em>/themes/jeffprod/archetypes/post.md</em> changed Author</li>
+<li>In <em>/themes/jeffprod/layouts/partials/footer.html</em> changed Twitter link to include @MrsBrookfield and removed other socials</li>
+</ol>
+<p>Now that we have the local site created we can proceed with putting it in a container.</p>
+
+            </div>
+        </div>
+    </div>
+    <div class="column is-3">
+        <div class="card">
+    <div class="card-content">
+        <h1 class="title is-5">Tags</h1>
+        <div class="tags">
+        
+        </div>          
+    </div>
+</div><br>
+        <div class="card">
+    <div class="card-content">
+        <h1 class="title is-5">Recent posts</h1>
+        
+            <h1><a href="http://advecti.io/2021/7-configuring-topology-spread-constraints/">7 Configuring Topology Spread Constraints</a></h1>
+            <time class="has-text-grey-light is-size-7">15 June 2021</time>
+        
+            <h1><a href="http://advecti.io/2021/6-creating-a-deployment/">6 Creating a Deployment</a></h1>
+            <time class="has-text-grey-light is-size-7">9 June 2021</time>
+        
+            <h1><a href="http://advecti.io/2021/5-creating-a-loadbalancer/">5 Creating a Loadbalancer</a></h1>
+            <time class="has-text-grey-light is-size-7">7 June 2021</time>
+        
+            <h1><a href="http://advecti.io/2021/4-creating-a-pod/">4 Creating a Pod</a></h1>
+            <time class="has-text-grey-light is-size-7">7 June 2021</time>
+        
+            <h1><a href="http://advecti.io/2021/3-creating-a-linode-kubernetes-cluster/">3 Creating a Linode Kubernetes Cluster</a></h1>
+            <time class="has-text-grey-light is-size-7">7 June 2021</time>
+        
+    </div>
+</div>
+    <br>
+                
+
+
+    
+<br>
+        <div class="card">
+    <div class="card-content">
+        <h1 class="title is-5">Archives</h1>
+        
+            <a href="http://advecti.io/archives/2021">2021</a> (8)<br>
+        
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+    </div>
+</div>
+
+<footer class="footer has-background-grey-darker has-text-white">
+    <div class="content has-text-centered">
+        <p>
+            <span class="icon is-large"><a href="https://twitter.com/MrsBrookfield" class="mysocial" rel="me"><i class="fab fa-twitter fa-3x"></i></a></span>&nbsp;&nbsp;
+            <br><br>
+            Copyright &copy; Hi, I&#39;m Hugo running on multiple Kubernetes nodes! 2021 - Theme by <a href="https://jeffprod.com" class="mysocial">JeffProd.com</a>
+            - <a class="mysocial" href="http://advecti.io/about">About</a>
+        </p>
+    </div>
+</footer>
+
+<script defer src="https://use.fontawesome.com/releases/v5.1.0/js/all.js"></script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Hi, I&#39;m Hugo running on multiple Kubernetes nodes!  | 6 Creating a Deployment</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css" />
+    <link rel="stylesheet" href="http://advecti.io/css/blog.css" />
+    </head>
+<body>
+
+    
+    <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="http://advecti.io">Home</a>
+        </div>
+    </nav>
+    
+
+    
+    <section class="hero is-info is-medium">
+        <div class="hero-body" style="background-image: url(http://advecti.io/img/bg-blog.jpg);">
+            <div class="container has-text-centered">
+                <br>
+                <h1 class="title is-size-1">
+                    
+                        6 Creating a Deployment
+                    
+                </h1>
+                
+            </div>
+        </div>
+    </section>
+
+
+<div class="container">
+    <div class="section">
+    
+
+<div class="columns">
+    <div class="column is-9">
+        <div class="tile is-child box">
+            <div class="content">
+                <p>Our website is now running and we can access it, however it is running in a single pod. That means that if it fails, our website will be down. To prevent this, we need to introduce some self-healing and scaling, and that&rsquo;s why we&rsquo;ll create a <strong>Deployment</strong>.</p>
+<h2 id="working-with-deployments">Working with Deployments</h2>
+<p>Before we create a Deployment, let&rsquo;s have a look what happens when we delete our single pod:</p>
+<pre><code>katarinabrookfield@KatsMac hugo-site % kubectl get pod hugo-site-pod -o wide
+NAME            READY   STATUS    RESTARTS   AGE   IP          NODE                          NOMINATED NODE   READINESS GATES
+hugo-site-pod   1/1     Running   0          27h   10.2.0.15   lke27049-39949-60a531334464   &lt;none&gt;           &lt;none&gt;
+katarinabrookfield@KatsMac hugo-site % kubectl delete pod hugo-site-pod
+pod &quot;hugo-site-pod&quot; deleted
+katarinabrookfield@KatsMac hugo-site % kubectl get pod hugo-site-pod -o wide
+Error from server (NotFound): pods &quot;hugo-site-pod&quot; not found
+katarinabrookfield@KatsMac hugo-site % kubectl get pod hugo-site-pod -o wide
+Error from server (NotFound): pods &quot;hugo-site-pod&quot; not found
+</code></pre><p>As you can see, our pod is not coming back, and neither is our website, so we need to deploy it again:</p>
+<pre><code>katarinabrookfield@KatsMac hugo-site % kubectl apply -f pod.yml
+pod/hugo-site-pod created
+katarinabrookfield@KatsMac hugo-site % kubectl get pod hugo-site-pod -o wide
+NAME            READY   STATUS    RESTARTS   AGE   IP          NODE                          NOMINATED NODE   READINESS GATES
+hugo-site-pod   1/1     Running   0          5s    10.2.0.16   lke27049-39949-60a531334464   &lt;none&gt;           &lt;none&gt;
+</code></pre><h3 id="adding-self-healing">Adding self-healing</h3>
+<p>Create a file called deployment.yml:</p>
+<pre><code>katarinabrookfield@KatsMac hugo-site % vi deployment.yml
+</code></pre><p>Enter the following info into the deployment.yml file:</p>
+<pre><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hugo-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      project: hugo-site
+  template:
+    metadata:
+      labels:
+        project: hugo-site
+    spec: 
+      containers:
+      - name: hugo-pod
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        image: katbrookfield/hugo-site
+</code></pre><h3 id="deploy-the-deployment">Deploy the Deployment</h3>
+<p>Run the following command to deploy the deployment:</p>
+<pre><code>katarinabrookfield@KatsMac hugo-site % kubectl apply -f deployment.yml
+deployment.apps/hugo-site-deployment created
+katarinabrookfield@KatsMac hugo-site % kubectl get pod | grep hugo
+hugo-site-deployment-74c977df86-9zvgs   1/1     Running            0          72s
+hugo-site-pod                           1/1     Running            0          44m
+</code></pre><p>As you can see, now we have two pods running; one from the previous example, and one from the deployment. We will now delete both of them and wait to see if the pod will be recreated:</p>
+<pre><code>katarinabrookfield@KatsMac hugo-site % kubectl delete pod hugo-site-deployment-74c977df86-9zvgs
+pod &quot;hugo-site-deployment-74c977df86-9zvgs&quot; deleted
+katarinabrookfield@KatsMac hugo-site % kubectl delete pod hugo-site-pod
+pod &quot;hugo-site-pod&quot; deleted
+katarinabrookfield@KatsMac hugo-site % kubectl get pod | grep hugo
+hugo-site-deployment-74c977df86-z8hd2   1/1     Running            0          32s
+</code></pre><p>New pod has been deployed automatically and our website is reachable again!</p>
+<h3 id="scale-the-app">Scale the app</h3>
+<p>Another thing we can do with deployments is to scale our app by adding or removing replicas.</p>
+<p>As with other commands, there are <em>imperative</em> commands to scale the application but I will stick to <em>declarative</em> and update the YAML definition file. This is mainly to avoid any confusion further down the line but also seems to be the best practice.</p>
+<p>To update the file, open the deployment.yml file again:</p>
+<pre><code>katarinabrookfield@KatsMac hugo-site % vi deployment.yml
+</code></pre><p>Change number of replicas, I have 3 nodes so I will change this to 3 replicas for now:</p>
+<pre><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hugo-site-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      project: hugo-site
+  template:
+    metadata:
+      labels:
+        project: hugo-site
+    spec:
+      containers:
+      - name: hugo-pod
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        image: katbrookfield/hugo-site
+</code></pre><p>If we deploy the deployment again, we will see the 2 new pods being created:</p>
+<pre><code>katarinabrookfield@KatsMac hugo-site % kubectl apply -f deployment.yml
+deployment.apps/hugo-site-deployment configured
+katarinabrookfield@KatsMac hugo-site % kubectl get pod | grep hugo
+hugo-site-deployment-74c977df86-b8r9x   0/1     ContainerCreating   0          3s
+hugo-site-deployment-74c977df86-mpfgn   0/1     ContainerCreating   0          3s
+hugo-site-deployment-74c977df86-z8hd2   1/1     Running             0          59m
+</code></pre><h2 id="bonus-where-are-my-pods">Bonus: Where are my pods?</h2>
+<p>In the previous section, I said I wanted to have 3 replicas to have them distributed over 3 nodes of my cluster. Looking at where they run, I could see they were actually deployed on 2 nodes only:</p>
+<pre><code>katarinabrookfield@KatsMac hugo-site % kubectl get pod -o wide | grep hugo
+hugo-site-deployment-74c977df86-8xhgl   1/1     Running            0          2m37s   10.2.0.24   lke27049-39949-60a531334464   &lt;none&gt;           &lt;none&gt;
+hugo-site-deployment-74c977df86-b8kv7   1/1     Running            0          2m37s   10.2.1.32   lke27049-39949-60a53133d7b2   &lt;none&gt;           &lt;none&gt;
+hugo-site-deployment-74c977df86-cs4qd   1/1     Running            0          2m37s   10.2.0.25   lke27049-39949-60a531334464   &lt;none&gt;           &lt;none&gt;
+</code></pre><p>So I tried to change it to 5 replicas:</p>
+<pre><code>katarinabrookfield@KatsMac hugo-site % vi deployment.yml
+katarinabrookfield@KatsMac hugo-site % kubectl get pod -o wide | grep hugo
+hugo-site-deployment-74c977df86-7nlf2   1/1     Running            0          22s     10.2.0.26   lke27049-39949-60a531334464   &lt;none&gt;           &lt;none&gt;
+hugo-site-deployment-74c977df86-8xhgl   1/1     Running            0          8m32s   10.2.0.24   lke27049-39949-60a531334464   &lt;none&gt;           &lt;none&gt;
+hugo-site-deployment-74c977df86-b8kv7   1/1     Running            0          8m32s   10.2.1.32   lke27049-39949-60a53133d7b2   &lt;none&gt;           &lt;none&gt;
+hugo-site-deployment-74c977df86-cs4qd   1/1     Running            0          8m32s   10.2.0.25   lke27049-39949-60a531334464   &lt;none&gt;           &lt;none&gt;
+hugo-site-deployment-74c977df86-xq92b   1/1     Running            0          22s     10.2.1.33   lke27049-39949-60a53133d7b2   &lt;none&gt;           &lt;none&gt;
+</code></pre><p>and then 10&hellip;</p>
+<pre><code>katarinabrookfield@KatsMac hugo-site % kubectl apply -f deployment.yml
+deployment.apps/hugo-site-deployment configured
+katarinabrookfield@KatsMac hugo-site % kubectl get pod -o wide | grep hugo
+hugo-site-deployment-74c977df86-7nlf2   1/1     Running             0          28s     10.2.0.26   lke27049-39949-60a531334464   &lt;none&gt;           &lt;none&gt;
+hugo-site-deployment-74c977df86-8xhgl   1/1     Running             0          8m38s   10.2.0.24   lke27049-39949-60a531334464   &lt;none&gt;           &lt;none&gt;
+hugo-site-deployment-74c977df86-b8kv7   1/1     Running             0          8m38s   10.2.1.32   lke27049-39949-60a53133d7b2   &lt;none&gt;           &lt;none&gt;
+hugo-site-deployment-74c977df86-bkwqz   0/1     ContainerCreating   0          2s      &lt;none&gt;      lke27049-39949-60a53133d7b2   &lt;none&gt;           &lt;none&gt;
+hugo-site-deployment-74c977df86-cs4qd   1/1     Running             0          8m38s   10.2.0.25   lke27049-39949-60a531334464   &lt;none&gt;           &lt;none&gt;
+hugo-site-deployment-74c977df86-flhn8   0/1     ContainerCreating   0          2s      &lt;none&gt;      lke27049-39949-60a53133d7b2   &lt;none&gt;           &lt;none&gt;
+hugo-site-deployment-74c977df86-flv7l   0/1     ContainerCreating   0          2s      &lt;none&gt;      lke27049-39949-60a53133d7b2   &lt;none&gt;           &lt;none&gt;
+hugo-site-deployment-74c977df86-q2qdg   0/1     ContainerCreating   0          2s      &lt;none&gt;      lke27049-39949-60a53133d7b2   &lt;none&gt;           &lt;none&gt;
+hugo-site-deployment-74c977df86-rz5p7   0/1     ContainerCreating   0          2s      &lt;none&gt;      lke27049-39949-60a53133d7b2   &lt;none&gt;           &lt;none&gt;
+hugo-site-deployment-74c977df86-xq92b   1/1     Running             0          28s     10.2.1.33   lke27049-39949-60a53133d7b2   &lt;none&gt;           &lt;none&gt;
+</code></pre><p>And then 60&hellip; I think you know where I&rsquo;m going with this.
+It still only deployed on those 2 nodes even though I have 3 nodes ready:</p>
+<pre><code>katarinabrookfield@KatsMac hugo-site % kubectl get nodes
+NAME                          STATUS   ROLES    AGE   VERSION
+lke27049-39949-60a531334464   Ready    &lt;none&gt;   21d   v1.20.6
+lke27049-39949-60a53133d7b2   Ready    &lt;none&gt;   21d   v1.20.6
+lke27049-39949-60a53134727c   Ready    &lt;none&gt;   21d   v1.20.6
+</code></pre><p>So I powered off one of the hosts and the pods still stayed there but marked as completed:</p>
+<pre><code>katarinabrookfield@KatsMac hugo-site % kubectl get nodes
+NAME                          STATUS     ROLES    AGE   VERSION
+lke27049-39949-60a531334464   NotReady   &lt;none&gt;   21d   v1.20.6
+lke27049-39949-60a53133d7b2   Ready      &lt;none&gt;   21d   v1.20.6
+lke27049-39949-60a53134727c   Ready      &lt;none&gt;   21d   v1.20.6
+katarinabrookfield@KatsMac hugo-site % kubectl get pod -o wide | grep hugo
+hugo-site-deployment-74c977df86-m9jq8   0/1     Completed          0          63m     &lt;none&gt;      lke27049-39949-60a531334464   &lt;none&gt;           &lt;none&gt;
+hugo-site-deployment-74c977df86-qmpwk   1/1     Running            0          63m     10.2.1.62   lke27049-39949-60a53133d7b2   &lt;none&gt;           &lt;none&gt;
+hugo-site-deployment-74c977df86-znfcl   0/1     Completed          0          63m     &lt;none&gt;      lke27049-39949-60a531334464   &lt;none&gt;           &lt;none&gt;
+</code></pre><p>Next I changed the number of replicas to 5 and it still deployed only on the second node??</p>
+<pre><code>katarinabrookfield@KatsMac hugo-site % kubectl get pod -o wide | grep hugo
+hugo-site-deployment-74c977df86-6zpv6   1/1     Running            0          24s     10.2.1.63   lke27049-39949-60a53133d7b2   &lt;none&gt;           &lt;none&gt;
+hugo-site-deployment-74c977df86-m9jq8   0/1     Completed          0          65m     &lt;none&gt;      lke27049-39949-60a531334464   &lt;none&gt;           &lt;none&gt;
+hugo-site-deployment-74c977df86-qmpwk   1/1     Running            0          65m     10.2.1.62   lke27049-39949-60a53133d7b2   &lt;none&gt;           &lt;none&gt;
+hugo-site-deployment-74c977df86-rss7f   1/1     Running            0          24s     10.2.1.64   lke27049-39949-60a53133d7b2   &lt;none&gt;           &lt;none&gt;
+hugo-site-deployment-74c977df86-znfcl   0/1     Completed          0          65m     &lt;none&gt;      lke27049-39949-60a531334464   &lt;none&gt;           &lt;none&gt;
+</code></pre><p>I think we&rsquo;ll leave it here now and look at some restart policies next.</p>
+
+            </div>
+        </div>
+    </div>
+    <div class="column is-3">
+        <div class="card">
+    <div class="card-content">
+        <h1 class="title is-5">Tags</h1>
+        <div class="tags">
+        
+        </div>          
+    </div>
+</div><br>
+        <div class="card">
+    <div class="card-content">
+        <h1 class="title is-5">Recent posts</h1>
+        
+            <h1><a href="http://advecti.io/2021/7-configuring-topology-spread-constraints/">7 Configuring Topology Spread Constraints</a></h1>
+            <time class="has-text-grey-light is-size-7">15 June 2021</time>
+        
+            <h1><a href="http://advecti.io/2021/6-creating-a-deployment/">6 Creating a Deployment</a></h1>
+            <time class="has-text-grey-light is-size-7">9 June 2021</time>
+        
+            <h1><a href="http://advecti.io/2021/5-creating-a-loadbalancer/">5 Creating a Loadbalancer</a></h1>
+            <time class="has-text-grey-light is-size-7">7 June 2021</time>
+        
+            <h1><a href="http://advecti.io/2021/4-creating-a-pod/">4 Creating a Pod</a></h1>
+            <time class="has-text-grey-light is-size-7">7 June 2021</time>
+        
+            <h1><a href="http://advecti.io/2021/3-creating-a-linode-kubernetes-cluster/">3 Creating a Linode Kubernetes Cluster</a></h1>
+            <time class="has-text-grey-light is-size-7">7 June 2021</time>
+        
+    </div>
+</div>
+    <br>
+                
+
+
+    
+<br>
+        <div class="card">
+    <div class="card-content">
+        <h1 class="title is-5">Archives</h1>
+        
+            <a href="http://advecti.io/archives/2021">2021</a> (8)<br>
+        
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+    </div>
+</div>
+
+<footer class="footer has-background-grey-darker has-text-white">
+    <div class="content has-text-centered">
+        <p>
+            <span class="icon is-large"><a href="https://twitter.com/MrsBrookfield" class="mysocial" rel="me"><i class="fab fa-twitter fa-3x"></i></a></span>&nbsp;&nbsp;
+            <br><br>
+            Copyright &copy; Hi, I&#39;m Hugo running on multiple Kubernetes nodes! 2021 - Theme by <a href="https://jeffprod.com" class="mysocial">JeffProd.com</a>
+            - <a class="mysocial" href="http://advecti.io/about">About</a>
+        </p>
+    </div>
+</footer>
+
+<script defer src="https://use.fontawesome.com/releases/v5.1.0/js/all.js"></script>
+</body>
+</html>

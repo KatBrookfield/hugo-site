@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta name="generator" content="Hugo 0.83.1" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Hi, I&#39;m Hugo running on multiple Kubernetes nodes!  | Hi, I&#39;m Hugo running on multiple Kubernetes nodes!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css" />
+    <link rel="stylesheet" href="http://advecti.io/css/blog.css" />
+    <link rel="alternate" type="application/rss+xml" href="http://advecti.io/index.xml" title="Hi, I'm Hugo running on multiple Kubernetes nodes!" />
+    </head>
+<body>
+
+    
+    <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="http://advecti.io">Home</a>
+        </div>
+    </nav>
+    
+
+    
+    <section class="hero is-info is-medium">
+        <div class="hero-body" style="background-image: url(http://advecti.io/img/bg-blog.jpg);">
+            <div class="container has-text-centered">
+                <br>
+                <h1 class="title is-size-1">
+                    
+                        Hi, I&#39;m Hugo running on multiple Kubernetes nodes!
+                    
+                </h1>
+                
+            </div>
+        </div>
+    </section>
+
+
+<div class="container">
+    <div class="section">
+    
+
+
+<div class="columns">
+    <div class="column is-9">
+        <div class="tile is-child box">
+            <div class="content">
+                <h3>Welcome to my blog !</h3>
+                <hr>
+                
+                    <article class="media">
+                        <div class="media-content">
+                            <div class="content">
+                                <p class="title is-4"><a href="http://advecti.io/2021/7-configuring-topology-spread-constraints/">7 Configuring Topology Spread Constraints</a></p>
+                                <p class="subtitle is-size-6 has-text-grey-light">
+                                    Published at June 15, 2021 &middot;
+                                    <i class="far fa-clock"></i>&nbsp;6 min read
+                                </p>
+                                <p>In previous post, we have scaled our deployment by defining number of replicas required but we weren&rsquo;t able to control where they get deployed. Today, we&rsquo;ll look into this further.
+Understanding default restart behaviour It is important to note that if a node fails, pods running on that node are scheduled for deletion. Pods only get scheduled on a node once, when they are created, and remain running on that node until it stops or is terminated....</p>
+                            </div>
+                        </div>
+                    </article>
+                
+                    <article class="media">
+                        <div class="media-content">
+                            <div class="content">
+                                <p class="title is-4"><a href="http://advecti.io/2021/6-creating-a-deployment/">6 Creating a Deployment</a></p>
+                                <p class="subtitle is-size-6 has-text-grey-light">
+                                    Published at June 9, 2021 &middot;
+                                    <i class="far fa-clock"></i>&nbsp;5 min read
+                                </p>
+                                <p>Our website is now running and we can access it, however it is running in a single pod. That means that if it fails, our website will be down. To prevent this, we need to introduce some self-healing and scaling, and that&rsquo;s why we&rsquo;ll create a Deployment.
+Working with Deployments Before we create a Deployment, let&rsquo;s have a look what happens when we delete our single pod:
+katarinabrookfield@KatsMac hugo-site % kubectl get pod hugo-site-pod -o wide NAME READY STATUS RESTARTS AGE IP NODE NOMINATED NODE READINESS GATES hugo-site-pod 1/1 Running 0 27h 10....</p>
+                            </div>
+                        </div>
+                    </article>
+                
+                    <article class="media">
+                        <div class="media-content">
+                            <div class="content">
+                                <p class="title is-4"><a href="http://advecti.io/2021/5-creating-a-loadbalancer/">5 Creating a Loadbalancer</a></p>
+                                <p class="subtitle is-size-6 has-text-grey-light">
+                                    Published at June 7, 2021 &middot;
+                                    <i class="far fa-clock"></i>&nbsp;2 min read
+                                </p>
+                                <p>Our pod is now running but we need to be able to connect to it. To do that, we will deploy a Service.
+One of the reasons why we are running this on a cloud-based cluster is the ability to deploy load-balancers. I know what you are thinking; &ldquo;Why are we deploying a load-balancer for a single pod?&quot;. At this stage, we&rsquo;re doing it to prepare for next steps which will include scaling-out of our application....</p>
+                            </div>
+                        </div>
+                    </article>
+                
+                    <article class="media">
+                        <div class="media-content">
+                            <div class="content">
+                                <p class="title is-4"><a href="http://advecti.io/2021/4-creating-a-pod/">4 Creating a Pod</a></p>
+                                <p class="subtitle is-size-6 has-text-grey-light">
+                                    Published at June 7, 2021 &middot;
+                                    <i class="far fa-clock"></i>&nbsp;1 min read
+                                </p>
+                                <p>We are now ready to deploy our Hugo app. To start, we will create a single Pod.
+Create a pod Create a file called pod.yml:
+katarinabrookfield@KatsMac hugo-site % vi pod.yml Enter the following info into the pod.yml file:
+apiVersion: v1 kind: Pod metadata: name: hugo-site-pod labels: project: hugo-site spec: containers: - name: web-ctr image: katbrookfield/hugo-site ports: - containerPort: 8080 Deploy the app Run the following command to deploy the app:...</p>
+                            </div>
+                        </div>
+                    </article>
+                
+                    <article class="media">
+                        <div class="media-content">
+                            <div class="content">
+                                <p class="title is-4"><a href="http://advecti.io/2021/3-creating-a-linode-kubernetes-cluster/">3 Creating a Linode Kubernetes Cluster</a></p>
+                                <p class="subtitle is-size-6 has-text-grey-light">
+                                    Published at June 7, 2021 &middot;
+                                    <i class="far fa-clock"></i>&nbsp;2 min read
+                                </p>
+                                <p>In previous post, we have containerized Hugo and pushed the image to our Docker Hub registry. Now we need a Kubernetes cluster to run this container on.
+There are several options, from using local kind, building your own Kubernetes cluster to multiple cloud offerings. I will be using Linode to host my Kubernetes cluster as it is a simple and cost-effective solution that allows me to run this test app, as well as to deploy load-balancers and other tools further down the line....</p>
+                            </div>
+                        </div>
+                    </article>
+                
+                    <article class="media">
+                        <div class="media-content">
+                            <div class="content">
+                                <p class="title is-4"><a href="http://advecti.io/2021/2-creating-a-docker-container/">2 Creating a Docker Container</a></p>
+                                <p class="subtitle is-size-6 has-text-grey-light">
+                                    Published at June 7, 2021 &middot;
+                                    <i class="far fa-clock"></i>&nbsp;3 min read
+                                </p>
+                                <p>Now that we have Hugo site created locally, we need to put it in a container. You don&rsquo;t have to use Docker as your container runtime but it still seems to be the most popular option so I&rsquo;m going to stick to it.
+Creating a Docker file I have tried to write the Dockerfile from scratch, however it is still not working exactly how I want it to. I will keep working on it and once done, I will publish an update....</p>
+                            </div>
+                        </div>
+                    </article>
+                
+                    <article class="media">
+                        <div class="media-content">
+                            <div class="content">
+                                <p class="title is-4"><a href="http://advecti.io/2021/1-working-with-hugo/">1 Working With Hugo</a></p>
+                                <p class="subtitle is-size-6 has-text-grey-light">
+                                    Published at June 7, 2021 &middot;
+                                    <i class="far fa-clock"></i>&nbsp;2 min read
+                                </p>
+                                <p>I am using Hugo to generate static sites for this blog. As I am on a Mac using Brew, I will be using it to install Hugo. If you are using a different OS you can follow installation instructions on https://gohugo.io/getting-started/installing/
+Installation Run following commands in your favourite terminal:
+brew install hugo hugo version You should see output similar to this:
+hugo version hugo v0.83.1+extended darwin/arm64 BuildDate=unknown Selecting a Theme There are a lot of Themes to choose from....</p>
+                            </div>
+                        </div>
+                    </article>
+                
+                    <article class="media">
+                        <div class="media-content">
+                            <div class="content">
+                                <p class="title is-4"><a href="http://advecti.io/2021/welcome/">Welcome</a></p>
+                                <p class="subtitle is-size-6 has-text-grey-light">
+                                    Published at June 7, 2021 &middot;
+                                    <i class="far fa-clock"></i>&nbsp;1 min read
+                                </p>
+                                <p>Hi, I&rsquo;m Kat, welcome to my blog! I am currently learning Kubernetes and needed a little test app to practice with. I have decided to use Hugo to live-document my journey and will be publishing posts as I go along and change the configuration.
+Few disclaimers before we start:
+  Ideas in this blog are not solely mine, I am bulding on examples I have encountered during my studies, mainly from following sources (I will be updating this list):...</p>
+                            </div>
+                        </div>
+                    </article>
+                
+            </div>
+        </div>
+    </div>
+    <div class="column is-3">
+        <div class="card">
+    <div class="card-content">
+        <h1 class="title is-5">Tags</h1>
+        <div class="tags">
+        
+        </div>          
+    </div>
+</div><br>
+        <div class="card">
+    <div class="card-content">
+        <h1 class="title is-5">Recent posts</h1>
+        
+            <h1><a href="http://advecti.io/2021/7-configuring-topology-spread-constraints/">7 Configuring Topology Spread Constraints</a></h1>
+            <time class="has-text-grey-light is-size-7">15 June 2021</time>
+        
+            <h1><a href="http://advecti.io/2021/6-creating-a-deployment/">6 Creating a Deployment</a></h1>
+            <time class="has-text-grey-light is-size-7">9 June 2021</time>
+        
+            <h1><a href="http://advecti.io/2021/5-creating-a-loadbalancer/">5 Creating a Loadbalancer</a></h1>
+            <time class="has-text-grey-light is-size-7">7 June 2021</time>
+        
+            <h1><a href="http://advecti.io/2021/4-creating-a-pod/">4 Creating a Pod</a></h1>
+            <time class="has-text-grey-light is-size-7">7 June 2021</time>
+        
+            <h1><a href="http://advecti.io/2021/3-creating-a-linode-kubernetes-cluster/">3 Creating a Linode Kubernetes Cluster</a></h1>
+            <time class="has-text-grey-light is-size-7">7 June 2021</time>
+        
+    </div>
+</div>
+    <br>
+        <div class="card">
+    <div class="card-content">
+        <h1 class="title is-5">Archives</h1>
+        
+            <a href="http://advecti.io/archives/2021">2021</a> (8)<br>
+        
+    </div>
+</div>
+
+    </div>
+</div>
+<div class="columns">
+    <div class="column is-9">
+        <nav class="pagination is-centered is-rounded" role="navigation" aria-label="pagination">
+            
+            
+            <ul class="pagination-list">
+                
+                <li class="pagination__item">
+                    <a class="pagination-link is-current" aria-label="Goto page 1" href="/">1</a>
+                </li>
+                
+            </ul>
+        </nav>
+    </div>
+</div>
+
+
+    </div>
+</div>
+
+<footer class="footer has-background-grey-darker has-text-white">
+    <div class="content has-text-centered">
+        <p>
+            <span class="icon is-large"><a href="https://twitter.com/MrsBrookfield" class="mysocial" rel="me"><i class="fab fa-twitter fa-3x"></i></a></span>&nbsp;&nbsp;
+            <br><br>
+            Copyright &copy; Hi, I&#39;m Hugo running on multiple Kubernetes nodes! 2021 - Theme by <a href="https://jeffprod.com" class="mysocial">JeffProd.com</a>
+            - <a class="mysocial" href="http://advecti.io/about">About</a>
+        </p>
+    </div>
+</footer>
+
+<script defer src="https://use.fontawesome.com/releases/v5.1.0/js/all.js"></script>
+</body>
+</html>

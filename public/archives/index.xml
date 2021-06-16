@@ -1,0 +1,23 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Archives on Hi, I&#39;m Hugo running on multiple Kubernetes nodes!</title>
+    <link>http://advecti.io/archives/</link>
+    <description>Recent content in Archives on Hi, I&#39;m Hugo running on multiple Kubernetes nodes!</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 15 Jun 2021 19:49:49 +0100</lastBuildDate>
+    
+        <atom:link href="http://advecti.io/archives/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>2021</title>
+      <link>http://advecti.io/archives/2021/</link>
+      <pubDate>Tue, 15 Jun 2021 19:49:49 +0100</pubDate>
+      
+      <guid>http://advecti.io/archives/2021/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

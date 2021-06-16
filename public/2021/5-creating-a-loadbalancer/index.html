@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Hi, I&#39;m Hugo running on multiple Kubernetes nodes!  | 5 Creating a Loadbalancer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css" />
+    <link rel="stylesheet" href="http://advecti.io/css/blog.css" />
+    </head>
+<body>
+
+    
+    <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="http://advecti.io">Home</a>
+        </div>
+    </nav>
+    
+
+    
+    <section class="hero is-info is-medium">
+        <div class="hero-body" style="background-image: url(http://advecti.io/img/bg-blog.jpg);">
+            <div class="container has-text-centered">
+                <br>
+                <h1 class="title is-size-1">
+                    
+                        5 Creating a Loadbalancer
+                    
+                </h1>
+                
+            </div>
+        </div>
+    </section>
+
+
+<div class="container">
+    <div class="section">
+    
+
+<div class="columns">
+    <div class="column is-9">
+        <div class="tile is-child box">
+            <div class="content">
+                <p>Our pod is now running but we need to be able to connect to it. To do that, we will deploy a <strong>Service</strong>.</p>
+<p>One of the reasons why we are running this on a cloud-based cluster is the ability to deploy load-balancers. I know what you are thinking; <em>&ldquo;Why are we deploying a load-balancer for a single pod?&quot;</em>. At this stage, we&rsquo;re doing it to prepare for next steps which will include scaling-out of our application.</p>
+<h2 id="create-a-service">Create a Service</h2>
+<p>Create a file called cloud-lb.yml:</p>
+<pre><code>katarinabrookfield@KatsMac hugo-site % vi cloud-lb.yml
+</code></pre><p>Enter the following info into the cloud-lb.yml file:</p>
+<pre><code>apiVersion: v1
+kind: Service
+metadata:
+  name: hugo-site-lb
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    project: hugo-site
+</code></pre><h2 id="deploy-the-service">Deploy the Service</h2>
+<p>Run the following command to deploy the service:</p>
+<pre><code>katarinabrookfield@KatsMac hugo-site % kubectl apply -f cloud-lb.yml
+service/hugo-site-lb created
+katarinabrookfield@KatsMac hugo-site % kubectl get svc
+NAME           TYPE           CLUSTER-IP      EXTERNAL-IP      PORT(S)        AGE
+hugo-site-lb   LoadBalancer   10.128.32.145   178.79.175.217   80:32542/TCP   4s
+</code></pre><p>You should now be able to browser to your <em>External-IP</em> and see your website.</p>
+<h2 id="adding-dns">Adding DNS</h2>
+<p>If you are in IT and following this, chances are that you bought a domain years ago and never used it. Well, now is your chance!</p>
+<p>I had a test domain in AWS to I have created two A records for advecti.io and <a href="http://www.advecti.io">www.advecti.io</a> for my load-balancer IP.</p>
+<p>You should now be able to access your website using your domain name!</p>
+
+            </div>
+        </div>
+    </div>
+    <div class="column is-3">
+        <div class="card">
+    <div class="card-content">
+        <h1 class="title is-5">Tags</h1>
+        <div class="tags">
+        
+        </div>          
+    </div>
+</div><br>
+        <div class="card">
+    <div class="card-content">
+        <h1 class="title is-5">Recent posts</h1>
+        
+            <h1><a href="http://advecti.io/2021/7-configuring-topology-spread-constraints/">7 Configuring Topology Spread Constraints</a></h1>
+            <time class="has-text-grey-light is-size-7">15 June 2021</time>
+        
+            <h1><a href="http://advecti.io/2021/6-creating-a-deployment/">6 Creating a Deployment</a></h1>
+            <time class="has-text-grey-light is-size-7">9 June 2021</time>
+        
+            <h1><a href="http://advecti.io/2021/5-creating-a-loadbalancer/">5 Creating a Loadbalancer</a></h1>
+            <time class="has-text-grey-light is-size-7">7 June 2021</time>
+        
+            <h1><a href="http://advecti.io/2021/4-creating-a-pod/">4 Creating a Pod</a></h1>
+            <time class="has-text-grey-light is-size-7">7 June 2021</time>
+        
+            <h1><a href="http://advecti.io/2021/3-creating-a-linode-kubernetes-cluster/">3 Creating a Linode Kubernetes Cluster</a></h1>
+            <time class="has-text-grey-light is-size-7">7 June 2021</time>
+        
+    </div>
+</div>
+    <br>
+                
+
+
+    
+<br>
+        <div class="card">
+    <div class="card-content">
+        <h1 class="title is-5">Archives</h1>
+        
+            <a href="http://advecti.io/archives/2021">2021</a> (8)<br>
+        
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+    </div>
+</div>
+
+<footer class="footer has-background-grey-darker has-text-white">
+    <div class="content has-text-centered">
+        <p>
+            <span class="icon is-large"><a href="https://twitter.com/MrsBrookfield" class="mysocial" rel="me"><i class="fab fa-twitter fa-3x"></i></a></span>&nbsp;&nbsp;
+            <br><br>
+            Copyright &copy; Hi, I&#39;m Hugo running on multiple Kubernetes nodes! 2021 - Theme by <a href="https://jeffprod.com" class="mysocial">JeffProd.com</a>
+            - <a class="mysocial" href="http://advecti.io/about">About</a>
+        </p>
+    </div>
+</footer>
+
+<script defer src="https://use.fontawesome.com/releases/v5.1.0/js/all.js"></script>
+</body>
+</html>

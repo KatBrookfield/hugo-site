@@ -1,0 +1,100 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>2021 on Hi, I&#39;m Hugo running on multiple Kubernetes nodes!</title>
+    <link>http://advecti.io/archives/2021/</link>
+    <description>Recent content in 2021 on Hi, I&#39;m Hugo running on multiple Kubernetes nodes!</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 15 Jun 2021 19:49:49 +0100</lastBuildDate>
+    
+        <atom:link href="http://advecti.io/archives/2021/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>7 Configuring Topology Spread Constraints</title>
+      <link>http://advecti.io/2021/7-configuring-topology-spread-constraints/</link>
+      <pubDate>Tue, 15 Jun 2021 19:49:49 +0100</pubDate>
+      
+      <guid>http://advecti.io/2021/7-configuring-topology-spread-constraints/</guid>
+      <description>In previous post, we have scaled our deployment by defining number of replicas required but we weren&amp;rsquo;t able to control where they get deployed. Today, we&amp;rsquo;ll look into this further.
+Understanding default restart behaviour It is important to note that if a node fails, pods running on that node are scheduled for deletion. Pods only get scheduled on a node once, when they are created, and remain running on that node until it stops or is terminated.</description>
+    </item>
+    
+    <item>
+      <title>6 Creating a Deployment</title>
+      <link>http://advecti.io/2021/6-creating-a-deployment/</link>
+      <pubDate>Wed, 09 Jun 2021 15:59:32 +0100</pubDate>
+      
+      <guid>http://advecti.io/2021/6-creating-a-deployment/</guid>
+      <description>Our website is now running and we can access it, however it is running in a single pod. That means that if it fails, our website will be down. To prevent this, we need to introduce some self-healing and scaling, and that&amp;rsquo;s why we&amp;rsquo;ll create a Deployment.
+Working with Deployments Before we create a Deployment, let&amp;rsquo;s have a look what happens when we delete our single pod:
+katarinabrookfield@KatsMac hugo-site % kubectl get pod hugo-site-pod -o wide NAME READY STATUS RESTARTS AGE IP NODE NOMINATED NODE READINESS GATES hugo-site-pod 1/1 Running 0 27h 10.</description>
+    </item>
+    
+    <item>
+      <title>5 Creating a Loadbalancer</title>
+      <link>http://advecti.io/2021/5-creating-a-loadbalancer/</link>
+      <pubDate>Mon, 07 Jun 2021 22:34:33 +0100</pubDate>
+      
+      <guid>http://advecti.io/2021/5-creating-a-loadbalancer/</guid>
+      <description>Our pod is now running but we need to be able to connect to it. To do that, we will deploy a Service.
+One of the reasons why we are running this on a cloud-based cluster is the ability to deploy load-balancers. I know what you are thinking; &amp;ldquo;Why are we deploying a load-balancer for a single pod?&amp;quot;. At this stage, we&amp;rsquo;re doing it to prepare for next steps which will include scaling-out of our application.</description>
+    </item>
+    
+    <item>
+      <title>4 Creating a Pod</title>
+      <link>http://advecti.io/2021/4-creating-a-pod/</link>
+      <pubDate>Mon, 07 Jun 2021 22:34:21 +0100</pubDate>
+      
+      <guid>http://advecti.io/2021/4-creating-a-pod/</guid>
+      <description>We are now ready to deploy our Hugo app. To start, we will create a single Pod.
+Create a pod Create a file called pod.yml:
+katarinabrookfield@KatsMac hugo-site % vi pod.yml Enter the following info into the pod.yml file:
+apiVersion: v1 kind: Pod metadata: name: hugo-site-pod labels: project: hugo-site spec: containers: - name: web-ctr image: katbrookfield/hugo-site ports: - containerPort: 8080 Deploy the app Run the following command to deploy the app:</description>
+    </item>
+    
+    <item>
+      <title>3 Creating a Linode Kubernetes Cluster</title>
+      <link>http://advecti.io/2021/3-creating-a-linode-kubernetes-cluster/</link>
+      <pubDate>Mon, 07 Jun 2021 22:33:48 +0100</pubDate>
+      
+      <guid>http://advecti.io/2021/3-creating-a-linode-kubernetes-cluster/</guid>
+      <description>In previous post, we have containerized Hugo and pushed the image to our Docker Hub registry. Now we need a Kubernetes cluster to run this container on.
+There are several options, from using local kind, building your own Kubernetes cluster to multiple cloud offerings. I will be using Linode to host my Kubernetes cluster as it is a simple and cost-effective solution that allows me to run this test app, as well as to deploy load-balancers and other tools further down the line.</description>
+    </item>
+    
+    <item>
+      <title>2 Creating a Docker Container</title>
+      <link>http://advecti.io/2021/2-creating-a-docker-container/</link>
+      <pubDate>Mon, 07 Jun 2021 22:33:34 +0100</pubDate>
+      
+      <guid>http://advecti.io/2021/2-creating-a-docker-container/</guid>
+      <description>Now that we have Hugo site created locally, we need to put it in a container. You don&amp;rsquo;t have to use Docker as your container runtime but it still seems to be the most popular option so I&amp;rsquo;m going to stick to it.
+Creating a Docker file I have tried to write the Dockerfile from scratch, however it is still not working exactly how I want it to. I will keep working on it and once done, I will publish an update.</description>
+    </item>
+    
+    <item>
+      <title>1 Working With Hugo</title>
+      <link>http://advecti.io/2021/1-working-with-hugo/</link>
+      <pubDate>Mon, 07 Jun 2021 22:33:20 +0100</pubDate>
+      
+      <guid>http://advecti.io/2021/1-working-with-hugo/</guid>
+      <description>I am using Hugo to generate static sites for this blog. As I am on a Mac using Brew, I will be using it to install Hugo. If you are using a different OS you can follow installation instructions on https://gohugo.io/getting-started/installing/
+Installation Run following commands in your favourite terminal:
+brew install hugo hugo version You should see output similar to this:
+hugo version hugo v0.83.1+extended darwin/arm64 BuildDate=unknown Selecting a Theme There are a lot of Themes to choose from.</description>
+    </item>
+    
+    <item>
+      <title>Welcome</title>
+      <link>http://advecti.io/2021/welcome/</link>
+      <pubDate>Mon, 07 Jun 2021 21:19:52 +0100</pubDate>
+      
+      <guid>http://advecti.io/2021/welcome/</guid>
+      <description>Hi, I&amp;rsquo;m Kat, welcome to my blog! I am currently learning Kubernetes and needed a little test app to practice with. I have decided to use Hugo to live-document my journey and will be publishing posts as I go along and change the configuration.
+Few disclaimers before we start:
+  Ideas in this blog are not solely mine, I am bulding on examples I have encountered during my studies, mainly from following sources (I will be updating this list):</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Hi, I&#39;m Hugo running on multiple Kubernetes nodes!  | 2 Creating a Docker Container</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css" />
+    <link rel="stylesheet" href="http://advecti.io/css/blog.css" />
+    </head>
+<body>
+
+    
+    <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="http://advecti.io">Home</a>
+        </div>
+    </nav>
+    
+
+    
+    <section class="hero is-info is-medium">
+        <div class="hero-body" style="background-image: url(http://advecti.io/img/bg-blog.jpg);">
+            <div class="container has-text-centered">
+                <br>
+                <h1 class="title is-size-1">
+                    
+                        2 Creating a Docker Container
+                    
+                </h1>
+                
+            </div>
+        </div>
+    </section>
+
+
+<div class="container">
+    <div class="section">
+    
+
+<div class="columns">
+    <div class="column is-9">
+        <div class="tile is-child box">
+            <div class="content">
+                <p>Now that we have Hugo site created locally, we need to put it in a container. You don&rsquo;t have to use Docker as your container runtime but it still seems to be the most popular option so I&rsquo;m going to stick to it.</p>
+<h2 id="creating-a-docker-file">Creating a Docker file</h2>
+<p>I have tried to write the Dockerfile from scratch, however it is still not working exactly how I want it to. I will keep working on it and once done, I will publish an update. In the meantime, we will use a Dockerfile that was used in this <a href="https://kube.academy/courses/hands-on-with-kubernetes-and-containers/">course on kube.academy</a> by Hart Hoover.</p>
+<pre><code>FROM alpine as HUGO
+
+ENV HUGO_VERSION=&quot;0.81.0&quot;
+
+RUN apk add --update wget
+
+# Install Hugo.
+RUN wget --quiet https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${HUGO_VERSION}_Linux-64bit.tar.gz &amp;&amp; \
+    tar -xf hugo_${HUGO_VERSION}_Linux-64bit.tar.gz &amp;&amp; \
+    mv hugo /usr/local/bin/hugo &amp;&amp; \
+    rm -rf hugo_${HUGO_VERSION}_Linux-64bit.tar.gz
+
+COPY . /hugo-site
+
+# Use Hugo to build the static site files.
+RUN hugo -v --source=/hugo-site --destination=/hugo-site/public
+
+FROM bitnami/nginx:latest
+COPY --from=HUGO /hugo-site/public/ /opt/bitnami/nginx/html/
+
+# The container will listen on port 8080 (non-privileged) using the TCP protocol.
+EXPOSE 8080
+</code></pre><p>Note that it is copying data from your current location, so make sure you are in the <em>hugo-site</em> folder we created in the previous step.</p>
+<p>Save the Dockerfile in the same directory, you should see these folders and files:</p>
+<pre><code>katarinabrookfield@KatsMac hugo-site % ls
+Dockerfile	archetypes	config.toml	content		data		layouts		resources	static		themes
+</code></pre><h2 id="building-a-docker-image">Building a Docker image</h2>
+<p>Run folllowing command to create a Docker image and tag it with a name:</p>
+<pre><code>katarinabrookfield@KatsMac hugo-site % docker image build -t katbrookfield/hugo-site .
+</code></pre><p>Please note <em>katbrookfield</em> is my Docker Hub ID, replace it with your own.</p>
+<p>To verify that your container was created, run <em>docker images</em> command to list your images:</p>
+<pre><code>katarinabrookfield@KatsMac hugo-site % docker images
+REPOSITORY                        TAG                                                                IMAGE ID       CREATED          SIZE
+katbrookfield/hugo-site           latest                                                             8df5d8197c7b   2 minutes ago    89.3MB
+</code></pre><h2 id="running-the-docker-image">Running the Docker image</h2>
+<p>To verify that the Docker image works as expected, we will start it and try to access the website:</p>
+<pre><code>katarinabrookfield@KatsMac hugo-site % docker run -d --rm --name hugo-site -p 8080:8080 katbrookfield/hugo-site
+</code></pre><p><em>-d</em> tells the container to run in the background</p>
+<p><em>&ndash;rm</em> removes container if it exists</p>
+<p><em>&ndash;name</em> specifies the name of the container</p>
+<p><em>-p</em> publishes ports to the host</p>
+<p>To verify that the container is working properly browse to http://localhost:8080 and you should see your website.</p>
+<p>Please note: You may see the following warning when you run the container but it will still run:</p>
+<pre><code>katarinabrookfield@KatsMac hugo-site % docker run -d --rm --name hugo-site -p 8080:8080 katbrookfield/hugo-site
+WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested
+9004731daff674ee00048dfddfd056707e2795baee2a68b862298c56173f9eae
+</code></pre><h2 id="stop-the-docker-container">Stop the Docker container</h2>
+<p>Now that we know the container is working as expected, we can stop it. First list running containers and then stop your container ID:</p>
+<pre><code>katarinabrookfield@KatsMac hugo-site % docker ps
+CONTAINER ID   IMAGE                     COMMAND                  CREATED         STATUS         PORTS                                                 NAMES
+9004731daff6   katbrookfield/hugo-site   &quot;/opt/bitnami/script…&quot;   7 minutes ago   Up 7 minutes   0.0.0.0:8080-&gt;8080/tcp, :::8080-&gt;8080/tcp, 8443/tcp   hugo-site
+
+katarinabrookfield@KatsMac hugo-site % docker stop 9004731daff6
+9004731daff6
+</code></pre><h2 id="push-docker-image-to-registry">Push Docker image to registry</h2>
+<p>We will now push the image to a Docker Hub registry by running the followind command:</p>
+<pre><code>katarinabrookfield@KatsMac hugo-site % docker image push katbrookfield/hugo-site
+
+Using default tag: latest
+The push refers to repository [docker.io/katbrookfield/hugo-site]
+059a786de63e: Pushed
+e5b3431038b5: Mounted from bitnami/nginx
+036d035a7ddd: Mounted from bitnami/nginx
+5f4995d1bfc6: Mounted from bitnami/nginx
+eae9c44f5210: Mounted from bitnami/nginx
+8af3324da74e: Mounted from bitnami/nginx
+ca637de6423c: Mounted from bitnami/nginx
+45f952449930: Mounted from bitnami/nginx
+f09237220f6b: Mounted from bitnami/nginx
+0045847e5b98: Mounted from bitnami/nginx
+64fdb1176e87: Mounted from bitnami/nginx
+1ad1d903ef1d: Layer already exists
+latest: digest: sha256:92f94cc3399e0f068f1d9f0d76b3262d09328003ad425bda0376dbf55e02b0a3 size: 2826
+</code></pre><p>Again, replace the Docker Hub ID with your own.</p>
+<p>We now need a Kubernetes cluster to run this container on so that is what we are going to create next.</p>
+
+            </div>
+        </div>
+    </div>
+    <div class="column is-3">
+        <div class="card">
+    <div class="card-content">
+        <h1 class="title is-5">Tags</h1>
+        <div class="tags">
+        
+        </div>          
+    </div>
+</div><br>
+        <div class="card">
+    <div class="card-content">
+        <h1 class="title is-5">Recent posts</h1>
+        
+            <h1><a href="http://advecti.io/2021/7-configuring-topology-spread-constraints/">7 Configuring Topology Spread Constraints</a></h1>
+            <time class="has-text-grey-light is-size-7">15 June 2021</time>
+        
+            <h1><a href="http://advecti.io/2021/6-creating-a-deployment/">6 Creating a Deployment</a></h1>
+            <time class="has-text-grey-light is-size-7">9 June 2021</time>
+        
+            <h1><a href="http://advecti.io/2021/5-creating-a-loadbalancer/">5 Creating a Loadbalancer</a></h1>
+            <time class="has-text-grey-light is-size-7">7 June 2021</time>
+        
+            <h1><a href="http://advecti.io/2021/4-creating-a-pod/">4 Creating a Pod</a></h1>
+            <time class="has-text-grey-light is-size-7">7 June 2021</time>
+        
+            <h1><a href="http://advecti.io/2021/3-creating-a-linode-kubernetes-cluster/">3 Creating a Linode Kubernetes Cluster</a></h1>
+            <time class="has-text-grey-light is-size-7">7 June 2021</time>
+        
+    </div>
+</div>
+    <br>
+                
+
+
+    
+<br>
+        <div class="card">
+    <div class="card-content">
+        <h1 class="title is-5">Archives</h1>
+        
+            <a href="http://advecti.io/archives/2021">2021</a> (8)<br>
+        
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+    </div>
+</div>
+
+<footer class="footer has-background-grey-darker has-text-white">
+    <div class="content has-text-centered">
+        <p>
+            <span class="icon is-large"><a href="https://twitter.com/MrsBrookfield" class="mysocial" rel="me"><i class="fab fa-twitter fa-3x"></i></a></span>&nbsp;&nbsp;
+            <br><br>
+            Copyright &copy; Hi, I&#39;m Hugo running on multiple Kubernetes nodes! 2021 - Theme by <a href="https://jeffprod.com" class="mysocial">JeffProd.com</a>
+            - <a class="mysocial" href="http://advecti.io/about">About</a>
+        </p>
+    </div>
+</footer>
+
+<script defer src="https://use.fontawesome.com/releases/v5.1.0/js/all.js"></script>
+</body>
+</html>
