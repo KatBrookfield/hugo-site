@@ -1,4 +1,4 @@
 docker image build -t katbrookfield/hugo-site .
 docker image push katbrookfield/hugo-site
-kubectl delete -f pod.yml
-kubectl apply -f pod.yml
+kubectl delete -f deployment.yml
+kubectl apply -f deployment.yml
