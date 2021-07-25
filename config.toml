@@ -1,6 +1,6 @@
 baseURL = "http://advecti.io"
 languageCode = "en-us"
-title = "Hi, I'm Hugo running on multiple Kubernetes nodes!"
+title = "Hi, I'm Hugo running on K8s and I update without downtime!"
 theme = "jeffprod"
 
 [permalinks]

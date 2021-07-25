@@ -1,3 +1,4 @@
+hugo new post/8-configuring-update-strategies.md
 docker image build -t katbrookfield/hugo-site .
 docker image push katbrookfield/hugo-site
 kubectl delete -f deployment.yml
