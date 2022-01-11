@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hugo-site-deployment
+  name: hugo-site-deployment-canary
 spec:
-  replicas: 5
+  replicas: 1
   selector:
     matchLabels:
       project: hugo-site
@@ -17,7 +17,7 @@ spec:
     metadata:
       labels:
         project: hugo-site
-        track: stable
+        track: canary
     spec: 
       topologySpreadConstraints:
       - maxSkew: 1
@@ -30,5 +30,5 @@ spec:
       - name: hugo-pod
         imagePullPolicy: Always
         ports:
-        - containerPort: 80
-        image: katbrookfield/hugo-site
+        - containerPort: 8080
+        image: katbrookfield/hugo-site:2.1

@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hugo-site-deployment
+  name: hugo-site-deployment-green
 spec:
   replicas: 5
   selector:
     matchLabels:
-      project: hugo-site
+      project: hugo-site-green
   minReadySeconds: 10
   strategy:
     type: RollingUpdate
@@ -16,8 +16,7 @@ spec:
   template:
     metadata:
       labels:
-        project: hugo-site
-        track: stable
+        project: hugo-site-green
     spec: 
       topologySpreadConstraints:
       - maxSkew: 1
@@ -25,10 +24,10 @@ spec:
         whenUnsatisfiable: ScheduleAnyway
         labelSelector: 
           matchLabels:
-            project: hugo-site
+            project: hugo-site-green
       containers:
       - name: hugo-pod
         imagePullPolicy: Always
         ports:
-        - containerPort: 80
-        image: katbrookfield/hugo-site
+        - containerPort: 8080
+        image: katbrookfield/hugo-site:2.0

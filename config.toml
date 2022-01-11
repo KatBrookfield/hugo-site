@@ -1,6 +1,6 @@
 baseURL = "http://advecti.io"
 languageCode = "en-us"
-title = "Hi, I'm Hugo running on K8s and I update without downtime!"
+title = "Hi, I'm Hugo running on latest version of K8s!"
 theme = "jeffprod"
 
 [permalinks]
